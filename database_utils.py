@@ -46,7 +46,6 @@ class DataBaseConnector:
         endpoint_zero = endpoint + '0'
         first_data = requests.get(endpoint_zero,headers=header).json()
         stores_df = pd.DataFrame(first_data,index=[0])
-        #print(stores_df)
         for i in range(1,num):
             total_endpoint = endpoint + str(i)
             response = requests.get(total_endpoint,headers=header)
