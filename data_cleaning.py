@@ -5,11 +5,9 @@ class DataCleaning:
     def clean_user_data(self,df):
         df_rep = pd.DataFrame()
         for column in list(df):
-            print(column)
             df_rep[column] = df[column].replace({'NULL':np.nan})
         df_rep['join_date'] = pd.to_datetime(df_rep['join_date'], infer_datetime_format=True, errors='coerce')
         df_no_null = df_rep.dropna(axis=0,how='any')
-
         return df_no_null
     def clean_card_data(self,df):
         df_rep = pd.DataFrame()
@@ -73,7 +71,6 @@ class DataCleaning:
     def clean_product_data(self,df):
         df_rep = pd.DataFrame()
         for column in list(df):
-            print(column)
             df_rep[column] = df[column].replace({'NULL':np.nan})
         df_no_null = df_rep.dropna(axis=0,how='any')
         return df_no_null

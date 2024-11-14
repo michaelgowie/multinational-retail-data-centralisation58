@@ -9,6 +9,7 @@ import data_cleaning as clean
 import tabula
 import boto3
 import json
+import requests
 
 
 
@@ -16,6 +17,9 @@ import json
 header = {'x-api-key':'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 num_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
 store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
+number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
+store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
+
 
 class DataExtractor:
     def read_rds_table(self,dat_con_inst,table_name):
@@ -46,6 +50,23 @@ class DataExtractor:
         date_json = json.loads(date_json_str)
         date_df = pd.DataFrame(date_json)
         return date_df
+    def list_number_of_stores(self, endpoint, header_dict):
+        response = requests.get(endpoint, headers=header_dict)
+        response_json = response.json()
+        return response_json['number_stores']
+    def retrieve_stores_data(self, endpoint, header):
+        num = self.list_number_of_stores(number_of_stores_endpoint, header)
+        endpoint_zero = endpoint + '0'
+        first_data = requests.get(endpoint_zero,headers=header).json()
+        stores_df = pd.DataFrame(first_data,index=[0])
+        for i in range(1,num):
+            total_endpoint = endpoint + str(i)
+            response = requests.get(total_endpoint,headers=header)
+            response_json = response.json()
+            df_i = pd.DataFrame(response_json, index=[0])
+            stores_df = pd.concat([stores_df,df_i],ignore_index=True)
+            df_i = None
+        return stores_df
 
 
 

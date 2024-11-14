@@ -10,6 +10,8 @@ extractor = extract.DataExtractor()
 pdf_url = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf'
 header_dict = {'x-api-key':'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 products_s3_address = 's3://data-handling-public/products.csv'
+number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
+individual_store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
 
 def upload_user():
     user_df = extractor.read_rds_table(connector, 'legacy_users')
@@ -23,7 +25,7 @@ def upload_card_details():
 
 
 def upload_stores():
-    stores_df = connector.retrieve_stores_data(header_dict)
+    stores_df = extractor.retrieve_stores_data(individual_store_endpoint, header_dict)
     clean_stores_df = cleaner.clean_store_data(stores_df)
     connector.upload_to_db(clean_stores_df, 'dim_store_details')
 
@@ -35,7 +37,7 @@ def upload_products():
 def upload_orders():
     orders_df = extractor.read_rds_table(connector, 'orders_table')
     clean_orders_df = cleaner.clean_orders_data(orders_df)
-    connector.upload_to_db(clean_orders_df'orders_table')
+    connector.upload_to_db(clean_orders_df,'orders_table')
 
 def upload_dates():
     date_df = extractor.extract_dates_from_s3()
