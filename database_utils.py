@@ -2,9 +2,7 @@ import yaml
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
-from sqlalchemy import text
 import pandas as pd
-import requests
 
 
 
@@ -37,23 +35,7 @@ class DataBaseConnector:
     def upload_to_db(self,df,table_name):
         engine = create_engine(f"postgresql+psycopg2://postgres:987621@localhost:5432/sales-data")
         df.to_sql(table_name, engine, if_exists='replace')
-    def list_number_of_stores(self, endpoint, header_dict):
-        response = requests.get(endpoint, headers=header_dict)
-        response_json = response.json()
-        return response_json['number_stores']
-    def retrieve_stores_data(self, endpoint, header):
-        num = self.list_number_of_stores(num_endpoint, header)
-        endpoint_zero = endpoint + '0'
-        first_data = requests.get(endpoint_zero,headers=header).json()
-        stores_df = pd.DataFrame(first_data,index=[0])
-        for i in range(1,num):
-            total_endpoint = endpoint + str(i)
-            response = requests.get(total_endpoint,headers=header)
-            response_json = response.json()
-            df_i = pd.DataFrame(response_json, index=[0])
-            stores_df = pd.concat([stores_df,df_i],ignore_index=True)
-            df_i = None
-        return stores_df
+    
     
 
 
@@ -61,8 +43,6 @@ class DataBaseConnector:
 
 
 
-num_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
-store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
 
 
 
