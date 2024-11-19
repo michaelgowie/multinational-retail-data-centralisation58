@@ -10,6 +10,7 @@ import tabula
 import boto3
 import json
 import requests
+import codecs
 
 
 
@@ -18,7 +19,6 @@ header = {'x-api-key':'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 num_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
 store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
 number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
-store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
 
 
 class DataExtractor:
@@ -35,18 +35,15 @@ class DataExtractor:
     def extract_from_s3(self, s3_address = None):
         s3 = boto3.client('s3')
         response = s3.get_object(Bucket='data-handling-public',Key='products.csv')
-        object_stuff = response['Body'].read().decode('utf8')
-        list_of_rows = object_stuff.split('\n')
-        list_of_cols = ['id']
-        list_of_cols.extend(list_of_rows[0].strip().split(',')[1:])
-        list_of_cols.append('dropcol')
-        obj_df = pd.DataFrame([row.strip().split(',') for row in list_of_rows[1:]], columns=list_of_cols)
-        obj_df.drop(['dropcol'],axis=1, inplace=True)
-        return obj_df
+        object_stuff = response['Body'].read().decode()
+        with codecs.open('products_write.csv','w', encoding='utf8', errors='ignore') as f:
+            f.write('id' + object_stuff)
+        df = pd.read_csv('products_write.csv')
+        return df
     def extract_dates_from_s3(self):
         s3 = boto3.client('s3')
         response = s3.get_object(Bucket='data-handling-public',Key='date_details.json')
-        date_json_str = response['Body'].read().decode('utf8')
+        date_json_str = response['Body'].read().decode()
         date_json = json.loads(date_json_str)
         date_df = pd.DataFrame(date_json)
         return date_df

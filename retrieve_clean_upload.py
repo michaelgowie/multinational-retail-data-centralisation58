@@ -16,33 +16,40 @@ individual_store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.
 def upload_user():
     user_df = extractor.read_rds_table(connector, 'legacy_users')
     clean_user_df = cleaner.clean_user_data(user_df)
+    print(clean_user_df.info())
     connector.upload_to_db(clean_user_df, 'dim_users')
 
 def upload_card_details():
     card_df = extractor.retrieve_pdf_data(pdf_url)
     clean_card_df = cleaner.clean_card_data(card_df)
+    print(clean_card_df.info())
     connector.upload_to_db(clean_card_df, 'dim_card_details')
 
 
 def upload_stores():
     stores_df = extractor.retrieve_stores_data(individual_store_endpoint, header_dict)
     clean_stores_df = cleaner.clean_store_data(stores_df)
+    print(clean_stores_df.info())
     connector.upload_to_db(clean_stores_df, 'dim_store_details')
 
 def upload_products():
     products_df = extractor.extract_from_s3(products_s3_address)
-    clean_products_df = cleaner.clean_product_data(products_df)
+    converted_wt_products_df = cleaner.convert_product_weights(products_df)
+    clean_products_df = cleaner.clean_product_data(converted_wt_products_df)
+    print(clean_products_df.info())
     connector.upload_to_db(clean_products_df, 'dim_products')
     
 def upload_orders():
     orders_df = extractor.read_rds_table(connector, 'orders_table')
     clean_orders_df = cleaner.clean_orders_data(orders_df)
+    print(clean_orders_df.info())
     connector.upload_to_db(clean_orders_df,'orders_table')
 
 def upload_dates():
     date_df = extractor.extract_dates_from_s3()
     clean_date_df = cleaner.clean_dates_data(date_df)
-    connector.upload_to_db(clean_date_df,'dim_date_time')
+    print(clean_date_df.info())
+    connector.upload_to_db(clean_date_df,'dim_date_times')
 
 
 
@@ -55,6 +62,5 @@ def upload_data_base():
     upload_user()
 
 
-upload_data_base()
-
+upload_dates()
 
