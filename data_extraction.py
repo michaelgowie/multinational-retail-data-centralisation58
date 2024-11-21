@@ -81,7 +81,8 @@ class DataExtractor:
         '''
         This method uses requests to obtain the data for each and every one of the stores.
         It uses the list_number_of_stors method to inform how many requests.get commands
-        it should run. It stores the result of every requests.get command in a single DataFrame.'''
+        it should run. It stores the result of every requests.get command in a single DataFrame.
+        '''
         num = self.list_number_of_stores(number_of_stores_endpoint, header)
         endpoint_zero = endpoint + '0'
         first_data = requests.get(endpoint_zero,headers=header).json()

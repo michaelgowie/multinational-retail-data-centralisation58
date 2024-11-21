@@ -42,7 +42,8 @@ class DataCleaning:
         This function takes in a DataFrame created by the DataExtractor.retrieve_stores_data
         method and returns a clean version.
         It removes all rows where the country_code is not one of the three possibilities and ensures that the staff_numbers
-        column contains only digits.'''
+        column contains only digits.
+        '''
         country_code_mask = df['country_code'].isin(['DE','GB','US'])
         df = df[country_code_mask]
         df.staff_numbers = df.staff_numbers.str.strip()
@@ -53,11 +54,13 @@ class DataCleaning:
         This method converts the product weights into floats.
         The DataFrame obtained by the DataExtractor.extract_from_s3 method has a weight column
         in which the weights are given as a string and in different units of measurement.
-        This method changes all of them to a float in the KG units.'''
+        This method changes all of them to a float in the KG units.
+        '''
         def convert_weight(weight_str):
             '''
             This function takes in a string and if it is of the form xxxkg, xxxg or xxxml, it returns a weight as a 
-            float in KG. Otherwise, it returns np.nan.'''
+            float in KG. Otherwise, it returns np.nan.
+            '''
             weight_str = str(weight_str)
             if weight_str.endswith('kg'):
                 if 'x' in weight_str:
@@ -105,7 +108,8 @@ class DataCleaning:
     def clean_product_data(self,df):
         '''
         This method cleans the DataFrame obtained by the DataExtractor.extract_from_s3 method.
-        It uses the convert_product_weights method and removes NULL values from the DataFrame.'''
+        It uses the convert_product_weights method and removes NULL values from the DataFrame.
+        '''
         df_rep = pd.DataFrame()
         for column in list(df):
             df_rep[column] = df[column].replace({'NULL':np.nan})
@@ -118,13 +122,15 @@ class DataCleaning:
     def clean_orders_data(self,df):
         '''
         This method removes columns from the orders DataFrame obtained by the DataExtractor.read_rds_table method
-        to preserve the anonimity of the orders.'''
+        to preserve the anonimity of the orders.
+        '''
         df.drop(['1','first_name','last_name','level_0'],axis=1, inplace=True)
         return df
     def clean_dates_data(self,df):
         '''
         This method cleans the DataFrame obtained by the DataExtractor.extract_dates_from_s3 method.
-        It removes Null values and also converts the month, day and year values into integers.'''
+        It removes Null values and also converts the month, day and year values into integers.
+        '''
         df['month'] = pd.to_numeric(df['month'],errors='coerce')
         df['year'] = pd.to_numeric(df['year'],errors='coerce')
         df['day'] = pd.to_numeric(df['day'],errors='coerce')
