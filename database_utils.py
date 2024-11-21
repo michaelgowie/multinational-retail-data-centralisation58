@@ -9,13 +9,30 @@ import pandas as pd
 header_dict = {'x-api-key':'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 
 class DataBaseConnector:
+    '''
+    This class interacts with two databases. The first is a read-only RDS database which contains the 
+    data for the project. The second is a database which us created by the user to hold the retrieved data.
+
+    Attributes:
+    engine (): this is the engine which interacts with the RDS database.
+    '''
     def __init__(self):
+        '''
+        This simply sets the engine attribute as NULL, ready to be defined later on.
+        '''
         self.engine = None
     def read_db_creds(self):
+        '''
+        This method reads a yaml file which contains the details of the RDS database and
+        stores it in a dictionary.
+        '''
         with open('db_creds.yaml',mode='r') as f:
             db_creds_dict = yaml.safe_load(f)
         return db_creds_dict
     def init_db_engine(self):
+        '''
+        This method initialises the RDS engine using the credentials provided by the read_db_creds methdod.
+        '''
         creds_dict = self.read_db_creds()
         HOST = creds_dict['RDS_HOST']
         PASSWORD = creds_dict['RDS_PASSWORD']
@@ -29,10 +46,17 @@ class DataBaseConnector:
         self.engine = engine
         return engine
     def list_db_tables(self):
+        '''
+        This method returns a list of all the tables in the RDS database.
+        '''
         engine = self.init_db_engine()
         inspector = inspect(engine)
         return(inspector.get_table_names())
     def upload_to_db(self,df,table_name):
+        '''
+        This method uploads the a table to the created postgres database.
+        It takes as input a dataframe to be uploaded and the name of the table to be applied.
+        '''
         engine = create_engine(f"postgresql+psycopg2://postgres:987621@localhost:5432/sales-data")
         df.to_sql(table_name, engine, if_exists='replace')
     
