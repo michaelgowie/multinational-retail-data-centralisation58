@@ -19,6 +19,7 @@ header = {'x-api-key':'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 num_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
 store_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/'
 number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
+s3_address = 's3://data-handling-public/products.csv'
 
 
 class DataExtractor:
@@ -39,7 +40,8 @@ class DataExtractor:
         '''
         This method retrieves data from a PDF file which can be found at a URL and 
         stores it in a DataFrame.
-        As input it takes a url and it outputs a DataFrame.'''
+        As input it takes a url and it outputs a DataFrame.
+        '''
         df_list = tabula.read_pdf(url,pages='all')
         card_df = df_list[0]
         for df in df_list[1:]:
@@ -53,7 +55,8 @@ class DataExtractor:
         this file and puts it into a DataFrame.
         '''
         s3 = boto3.client('s3')
-        response = s3.get_object(Bucket='data-handling-public',Key='products.csv')
+        s3_address_split = s3_address.split('/')
+        response = s3.get_object(Bucket=s3_address_split[-2],Key=s3_address_split[-1])
         object_stuff = response['Body'].read().decode()
         with codecs.open('products_write.csv','w', encoding='utf8', errors='ignore') as f:
             f.write('id' + object_stuff)
@@ -73,7 +76,8 @@ class DataExtractor:
     def list_number_of_stores(self, endpoint, header_dict):
         '''
         This method uses requests to obtain the number of stores from a given endpoint.
-        As input, it takes the endpoint for the number of stores as well as a dictionary of headers.'''
+        As input, it takes the endpoint for the number of stores as well as a dictionary of headers.
+        '''
         response = requests.get(endpoint, headers=header_dict)
         response_json = response.json()
         return response_json['number_stores']
