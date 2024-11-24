@@ -84,5 +84,5 @@ def upload_data_base():
     upload_user()
 
 
-upload_dates()
+upload_data_base()
 
