@@ -1,5 +1,5 @@
 ALTER TABLE orders_table
-	ALTER COLUMN product_quantity TYPE smallint USING date_uuid::uuid;
+	ALTER COLUMN product_quantity TYPE smallint;
 
 
 ALTER TABLE orders_table
