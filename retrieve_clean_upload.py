@@ -37,6 +37,7 @@ def upload_stores():
     This function retrieves, cleans and uploads the data for the dim_store_details table, using the methods in
     the DataExtractor, DataCleaning and DataBaseConnector classes.
     '''
+    header_dict = connector.read_db_creds('headers.yaml')
     stores_df = extractor.retrieve_stores_data(individual_store_endpoint, header_dict)
     clean_stores_df = cleaner.clean_store_data(stores_df)
     connector.upload_to_db(clean_stores_df, 'dim_store_details')
