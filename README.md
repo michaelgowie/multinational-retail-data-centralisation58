@@ -1,7 +1,8 @@
 # Multinational Retail Database Project
 ---
 ## Project Description
-This is a project which retrieves and analyses data on the sales and of a multinational retail company. The project contains code which retrieves the data from multiple sources, cleans it and uploads it to a postgresql database. The files in sql_database_alterations then use sql to prepare the star database schema. Finally, the queries.sql file performs queries to extract information from the database.
+This is a project which retrieves and analyses data on the sales and of a multinational retail company. The project contains code which retrieves the data from multiple sources, cleans it and uploads it to a postgresql database. The files in sql_database_alterations then use sql to prepare the star database schema. Below is a graphic detailing the nature of the database. Finally, the queries.sql file performs queries to extract information from the database.
+![sales_data_STAR](https://github.com/user-attachments/assets/dd4e5e7b-be60-46e4-830f-9d35a6dc304d)
 
 ## Usage
 To use the code and create a postgresql database with it, we must first create a yaml file named db_creds.yaml which contains the credentials of the RDS postgresql database from which to import the user data. Then, after setting up our own postgresql database to receieve the data, we may run the retrieve_clean_upload.py file.
